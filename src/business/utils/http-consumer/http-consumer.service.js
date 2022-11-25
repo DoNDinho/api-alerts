@@ -13,7 +13,7 @@ const consume = async (func, serviceData) => {
 	try {
 		console.log(`Se consume la API ${url}`, { body })
 		const response = await func()
-		console.log(`Respuesta de la API ${url}`, { response: response.data })
+		console.log(`Respuesta de la API ${url}`, { response: JSON.stringify(response.data) })
 		return response.data
 	} catch (error) {
 		console.error(`Error al consumir servicio. ${error.message}`)

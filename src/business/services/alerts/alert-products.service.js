@@ -1,13 +1,12 @@
 'use strict'
 const productsRepository = require('../../../data/repository/products.repository')
-const { orderDetailConverter } = require('../../converter/order-detail.converter')
+const Socket = require('../../utils/socket/socket')
 
 const execute = async () => {
   try {
     const products = await listProducts()
-    // TODO implementar filter para filtrar segun stock bajo
-    // TODO si el arreglo.length es mayor a 0, se debe enviar por web socket (ver si se envia el arreglo completo o de a uno)
-    // TODO implementar un cron job
+    const productsWithCriticalStock = products.filter(product => product.stock < product.minimum_stock)
+    if (productsWithCriticalStock.length > 0) publishProductsStockEvent(productsWithCriticalStock)
   } catch (error) {
     throw error
   }
@@ -15,9 +14,20 @@ const execute = async () => {
 
 const listProducts = async () => {
   try {
-    return await productsRepository.listProducts()
+    const response = await productsRepository.listProducts()
+    return response.products
   } catch (error) {
     throw { httpCode: 422, message: error.message }
+  }
+}
+
+const publishProductsStockEvent = (products) => {
+  try {
+    const socket = Socket.getInstance()
+    const event = 'productsWithCriticalStock'
+    socket.emit(event, { products })
+  } catch (error) {
+    console.log('No hay usuarios conectados al socket')
   }
 }
 

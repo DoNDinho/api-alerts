@@ -4,7 +4,7 @@ const router = express.Router()
 
 router.get(`/Alerts/v1/products`, async (req, res, next) => {
   try {
-    // await alertProductsService.execute()
+    await alertProductsService.execute()
     res.status(204).json()
   } catch (error) {
     console.log('error: ', error.message)
