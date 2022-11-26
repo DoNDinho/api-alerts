@@ -6,7 +6,7 @@ const execute = async () => {
   try {
     const products = await listProducts()
     const productsWithCriticalStock = products.filter(product => product.stock < product.minimum_stock)
-    if (productsWithCriticalStock.length > 0) publishProductsStockEvent(productsWithCriticalStock)
+    publishProductsStockEvent(productsWithCriticalStock)
   } catch (error) {
     throw error
   }
@@ -25,6 +25,7 @@ const publishProductsStockEvent = (products) => {
   try {
     const socket = Socket.getInstance()
     const event = 'productsWithCriticalStock'
+    console.log({ products })
     socket.emit(event, { products })
   } catch (error) {
     console.log('No hay usuarios conectados al socket')
